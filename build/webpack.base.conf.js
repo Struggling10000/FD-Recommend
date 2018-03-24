@@ -4,6 +4,7 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 const webpack = require('webpack')
+
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -34,9 +35,10 @@ module.exports = {
   },
   // 增加一个plugins
   plugins: [
+    new webpack.optimize.CommonsChunkPlugin('common.js'),
     new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
+      jQuery: "jquery",
+      $: "jquery"
     })
   ],
 
@@ -50,7 +52,7 @@ module.exports = {
       }
     }],
     rules: [
-      ...(config.dev.useEslint ? false : false),
+      ...(config.dev.useEslint ? [] : []),
       {
         test: /\.vue$/,
         loader: 'vue-loader',

@@ -1,13 +1,16 @@
 <template>
     <div id="index" class="container">
-        <div class="row">
-            <div v-for="arr in items">
-                <div v-for="i in arr">
-                    <div v-if="i">
-                        <item v-bind:item="i" v-on:remind="receive"></item>
-                    </div>
+        <div v-for="arr in items" class="row">
+            <div v-for="i in arr">
+                <div v-if="i">
+                    <item v-bind:iid="i.itemId" v-bind:itl="i.itemTittle" v-bind:ipr="i.itemPrice" v-on:remind="receive"></item>
                 </div>
             </div>
+        </div>
+        <div class="fixed-action-btn" v-on:click="routeTo">
+            <a class="btn-floating btn-large red">
+                <i class="large material-icons">payment</i>
+            </a>
         </div>
     </div>
 </template>
@@ -15,6 +18,7 @@
 
 </style>
 <script>
+import $ from "jquery";
 import Item from "@/components/Item";
 import axios from "axios";
 export default {
@@ -24,7 +28,7 @@ export default {
             row: 0,
             col: 0,
             //CSS指定长度，对应s2
-            col_s: 2,
+            col_s: 3,
             //数据二维数组
             items: [],
             //数据一维数组
@@ -32,42 +36,62 @@ export default {
                 {
                     itemId: "0",
                     itemTittle: "0",
-                    itemPrice: "0"
+                    itemPrice: "￥15"
                 },
                 {
                     itemId: "1",
-                    itemTittle: "1",
-                    itemPrice: "1"
+                    itemTittle: "1122",
+                    itemPrice: "￥10"
                 },
                 {
                     itemId: "2",
-                    itemTittle: "2",
-                    itemPrice: "2"
+                    itemTittle: "221",
+                    itemPrice: "￥12"
                 },
                 {
                     itemId: "3",
-                    itemTittle: "3",
-                    itemPrice: "3"
+                    itemTittle: "32333",
+                    itemPrice: "￥100"
                 },
                 {
                     itemId: "4",
                     itemTittle: "4",
-                    itemPrice: "4"
+                    itemPrice: "￥1241"
                 },
                 {
                     itemId: "5",
-                    itemTittle: "5",
-                    itemPrice: "5"
+                    itemTittle: "5444444",
+                    itemPrice: "￥45.8"
                 },
                 {
                     itemId: "6",
-                    itemTittle: "6",
-                    itemPrice: "6"
+                    itemTittle: "62333",
+                    itemPrice: "￥12.0"
                 },
                 {
                     itemId: "7",
                     itemTittle: "7",
-                    itemPrice: "7"
+                    itemPrice: "￥10.000"
+                },
+                {
+                    itemId: "8",
+                    itemTittle: "8",
+                    itemPrice: "￥10.000"
+                },
+                {
+                    itemId: "9",
+                    itemTittle: "9",
+                    itemPrice: "￥10.000"
+                },
+                {
+                    itemId: "10",
+                    itemTittle: "10",
+                    itemPrice: "￥10.000"
+                },
+                {
+                    itemId: "11",
+                    itemTittle: "11",
+                    itemPrice: "￥10.000"
                 }
             ],
             collectItems: []
@@ -77,10 +101,19 @@ export default {
         item: Item
     },
     methods: {
+        routeTo: function() {
+            this.$router.push({
+                path: "/collect",
+                name: "collect",
+                params: {
+                    collectItems: this.collectItems,
+                    items: this.data
+                }
+            });
+        },
         //初始化二维数组
         initItems: function() {
             console.log("initItems");
-
             let app = this;
             app.col = app.getCol();
             app.row = app.getRow(app.data.length);
@@ -95,31 +128,36 @@ export default {
         //根据数据长度获取显示行数
         getRow: function(len) {
             return Math.ceil(len / this.getCol());
-            console.log("getCol");
         },
         //根据指定CSS长度获取列数
         getCol: function() {
             return 12 / this.col_s;
-            console.log("getRow");
         },
         //接收子组件消息
         receive: function(msg) {
             //{ id: app.id, coll: app.coll }
             if (msg.coll) {
-                addItem(msg.id);
+                this.addItem(msg.id);
             } else {
-                removeItem(msg.id);
+                this.removeItem(msg.id);
             }
         },
-        //根据id将物品增加到数组
+        //根据id将物品增加到收藏数组
         addItem: function(id) {
-            let app = this;
-            //app.collectItems.push();
+            this.collectItems.push(id);
+            console.log(this.collectItems);
         },
         //移除
-        removeItem: function(id) {},
-        //通过id搜索data中的项
-        searchItem: function(id) {}
+        removeItem: function(id) {
+            let index = this.searchItem(id);
+            this.collectItems.splice(index, 1);
+        },
+        //搜索
+        searchItem: function(id) {
+            return this.collectItems.findIndex(i => {
+                return i === id;
+            });
+        }
     },
     mounted: function() {
         this.initItems();
