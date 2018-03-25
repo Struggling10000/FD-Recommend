@@ -3,7 +3,7 @@
         <div v-for="arr in items" class="row">
             <div v-for="i in arr">
                 <div v-if="i">
-                    <item v-bind:iid="i.itemId" v-bind:itl="i.itemTittle" v-bind:ipr="i.itemPrice" v-on:remind="receive"></item>
+                    <item v-bind:iid="i.itemId" v-bind:itl="i.itemTitle" v-bind:ipr="i.itemPrice" v-bind:iimg="i.itemImg" v-on:remind="receive"></item>
                 </div>
             </div>
         </div>
@@ -19,6 +19,7 @@
 </style>
 <script>
 import $ from "jquery";
+import config from "@/config/config";
 import Item from "@/components/Item";
 import axios from "axios";
 export default {
@@ -32,68 +33,7 @@ export default {
             //数据二维数组
             items: [],
             //数据一维数组
-            data: [
-                {
-                    itemId: "0",
-                    itemTittle: "0",
-                    itemPrice: "￥15"
-                },
-                {
-                    itemId: "1",
-                    itemTittle: "1122",
-                    itemPrice: "￥10"
-                },
-                {
-                    itemId: "2",
-                    itemTittle: "221",
-                    itemPrice: "￥12"
-                },
-                {
-                    itemId: "3",
-                    itemTittle: "32333",
-                    itemPrice: "￥100"
-                },
-                {
-                    itemId: "4",
-                    itemTittle: "4",
-                    itemPrice: "￥1241"
-                },
-                {
-                    itemId: "5",
-                    itemTittle: "5444444",
-                    itemPrice: "￥45.8"
-                },
-                {
-                    itemId: "6",
-                    itemTittle: "62333",
-                    itemPrice: "￥12.0"
-                },
-                {
-                    itemId: "7",
-                    itemTittle: "7",
-                    itemPrice: "￥10.000"
-                },
-                {
-                    itemId: "8",
-                    itemTittle: "8",
-                    itemPrice: "￥10.000"
-                },
-                {
-                    itemId: "9",
-                    itemTittle: "9",
-                    itemPrice: "￥10.000"
-                },
-                {
-                    itemId: "10",
-                    itemTittle: "10",
-                    itemPrice: "￥10.000"
-                },
-                {
-                    itemId: "11",
-                    itemTittle: "11",
-                    itemPrice: "￥10.000"
-                }
-            ],
+            data: [],
             collectItems: []
         };
     },
@@ -101,6 +41,22 @@ export default {
         item: Item
     },
     methods: {
+        getData: function() {
+            let app = this;
+            axios
+                .get(config.data)
+                .then(res => {
+                    if (res.data.code === 200) {
+                        app.data = res.data.data;
+                        app.initItems()
+                    } else {
+
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        },
         routeTo: function() {
             this.$router.push({
                 path: "/collect",
@@ -160,7 +116,7 @@ export default {
         }
     },
     mounted: function() {
-        this.initItems();
+        this.getData();
     }
 };
 </script>

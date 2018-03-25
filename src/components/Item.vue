@@ -1,16 +1,17 @@
 <template>
     <div id="item">
-        <div class="col s4 m3">
+        <div class="col s4 m3" id="info">
             <div class="card-panel hoverable">
                 <div class="card-image">
-                    <img class="responsive-img" v-bind:src="img"></img>
-                    <span class="card-title">{{itl}}</span>
+                    <img class="responsive-img" v-bind:src="iimg"></img>
                 </div>
                 <div class="card-content black-text">
+                    <span class="card-title">{{itl}}</span>
+                    <br>
                     <span class="card-title">{{ipr}}</span>
                 </div>
                 <div class="card-action">
-                    <a class="waves-effect waves-teal btn-flat red lighten-1" v-on:click="collect">
+                    <a class="waves-effect waves-purple btn-flat red lighten-1" v-on:click="collect">
                         <span class="white-text">
                             收藏
                         </span>
@@ -29,8 +30,6 @@ export default {
     data() {
         return {
             coll: false,
-            img:
-                "https://g-search2.alicdn.com/img/bao/uploaded/i4/i3/2170721000/TB1O5enSVXXXXcNXVXXXXXXXXXX_!!0-item_pic.jpg_580x580Q90.jpg"
         };
     },
     props: ["iid", "itl", "ipr", "iimg"],
