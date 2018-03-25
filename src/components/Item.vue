@@ -35,6 +35,7 @@ export default {
     props: ["iid", "itl", "ipr", "iimg"],
     mounted: function() {},
     methods: {
+        //点击添加到收藏
         collect: function() {
             let app = this;
             app.coll = !app.coll;

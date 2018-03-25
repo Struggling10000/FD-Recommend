@@ -63,11 +63,13 @@ export default {
         };
     },
     methods: {
+        //从路由获取参数
         getParams: function() {
             let params = this.$route.params;
             this.items = params.items;
             this.collectItems = params.collectItems;
         },
+        //搜索item
         getItem: function(id) {
             let app = this;
             let item = app.items.find(item => {
