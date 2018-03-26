@@ -3,15 +3,22 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
-const webpack = require('webpack')
+var webpack = require("webpack")
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
-
-
 module.exports = {
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin('common.js'),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery",
+      jquery: "jquery",
+      "window.jQuery": "jquery"
+    })
+  ],
   context: path.resolve(__dirname, '../'),
   entry: {
     app: './src/main.js'
@@ -27,33 +34,11 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
-      // webpack 使用 jQuery，如果是自行下载的
-      // 'jquery': path.resolve(__dirname, '../src/assets/libs/jquery/jquery.min'),
-      // 如果使用NPM安装的jQuery
       'jquery': 'jquery'
     }
   },
-  // 增加一个plugins
-  plugins: [
-    new webpack.optimize.CommonsChunkPlugin('common.js'),
-    new webpack.ProvidePlugin({
-      jQuery: "jquery",
-      $: "jquery"
-    })
-  ],
-
   module: {
-    loaders: [{
-      test: /\.js$/,
-      exclude: /(node_modules|bower_components)/,
-      loader: 'babel',
-      query: {
-        presets: ['es2015']
-      }
-    }],
-    rules: [
-      ...(config.dev.useEslint ? [] : []),
-      {
+    rules: [{
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
