@@ -67,6 +67,7 @@
 import $ from "jquery";
 import cookieUtil from "@/utils/cookie";
 import config from "@/config/config";
+import signOper from "@/module/signOper"
 export default {
     name: "collect",
     data() {
