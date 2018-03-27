@@ -9,6 +9,9 @@
 # 进入项目目录
 cd /xxx/xxx/FD-Recommend
 
+# 修改后台ip地址
+/src/config/config.js (host)
+
 # 安装依赖
 npm install --save
 
