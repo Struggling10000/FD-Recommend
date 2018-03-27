@@ -1,9 +1,15 @@
-var host = 'http://localhost:9000'
-var data = host + '/data'
-var login = host + '/login'
-var reg = host + '/reg'
+// 后端服务器地址以及api
+const host = 'http://localhost:9000'
+const data = host + '/data'
+const login = host + '/login'
+const reg = host + '/reg'
+// 前端cookie保存key
+const serverkey = 'token'
+const userkey = 'user'
 export default {
   data,
   login,
-  reg
+  reg,
+  serverkey,
+  userkey
 }

@@ -7,10 +7,27 @@
                 </div>
             </div>
         </div>
-        <div class="fixed-action-btn" v-on:click="routeTo">
+        <div class="fixed-action-btn">
             <a class="btn-floating btn-large red">
-                <i class="large material-icons">payment</i>
+                <i class="large material-icons">list</i>
             </a>
+            <ul>
+                <li v-if="!islive" v-on:click="routeTo('/login','login_reg')">
+                    <a class="btn-floating red">
+                        登录
+                    </a>
+                </li>
+                <li v-if="islive" v-on:click="logout">
+                    <a class="btn-floating green">
+                        登出
+                    </a>
+                </li>
+                <li v-on:click="routeTo('/collect','collect')">
+                    <a class="btn-floating blue">
+                        收藏
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
@@ -22,10 +39,14 @@ import $ from "jquery";
 import config from "@/config/config";
 import Item from "@/components/Item";
 import axios from "axios";
+import cookieUtil from "@/utils/cookie";
+import signOper from "@/module/signOper";
 export default {
     name: "index",
     data() {
         return {
+            // 判断是否是已登录状态
+            islive: false,
             row: 0,
             col: 0,
             //CSS指定长度，对应s2
@@ -37,10 +58,17 @@ export default {
             collectItems: []
         };
     },
+    // 子组件
     components: {
         item: Item
     },
     methods: {
+        logout: function() {
+            // 退出登录后返回登录界面
+            signOper.logout();
+            this.routeTo("/login", "login_reg");
+        },
+        // 获取初始数据
         getData: function() {
             let app = this;
             axios
@@ -48,21 +76,24 @@ export default {
                 .then(res => {
                     if (res.data.code === 200) {
                         app.data = res.data.data;
-                        app.initItems()
+                        app.initItems();
                     } else {
-
                     }
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err);
                 });
         },
-        routeTo: function() {
+        // 路由到其他url
+        routeTo: function(path, name) {
             this.$router.push({
-                path: "/collect",
-                name: "collect",
+                path: path,
+                name: name,
+                // 默认传递参数
                 params: {
+                    // 用户收藏商品
                     collectItems: this.collectItems,
+                    // 原始数据
                     items: this.data
                 }
             });
@@ -117,6 +148,10 @@ export default {
     },
     mounted: function() {
         this.getData();
+        // 检查token以确认用户是否登录
+        if (cookieUtil.checkcookie(config.serverkey)) {
+            this.islive = true;
+        }
     }
 };
 </script>

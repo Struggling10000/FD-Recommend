@@ -5,7 +5,9 @@
             <div id="card" class="col s4 m3">
                 <div class="card blue-grey darken-1 small">
                     <div class="card">
-                        <div id="full"></div>
+                        <div id="full">
+                            <span id="signtip">请登录</span>
+                        </div>
                         <div class="input-field container">
                             <input placeholder="登录名" v-model="log_user" id="log_user" type="text" class="validate">
                         </div>
@@ -76,6 +78,7 @@
 <script>
 import $ from "jquery";
 import config from "@/config/config";
+import cookieUtil from "@/utils/cookie";
 import axios from "axios";
 export default {
     name: "login_reg",
@@ -89,12 +92,15 @@ export default {
         };
     },
     mounted: function() {
+        console.log("login init");
         $("select").material_select();
     },
     methods: {
+        // 判断字符串是否为空
         isEmpty: function(str) {
             return str.replace(/(^\s*)|(\s*$)/g, "").length == 0;
         },
+        //登录
         signIn: function() {
             let app = this;
             let realName = app.isEmpty(app.log_user);
@@ -114,12 +120,22 @@ export default {
                         passwd: app.log_psw
                     })
                     .then(res => {
-                        data = res.data;
-                        
-                        if(data.code === 200){
-                            
-                        }
-                        else{
+                        let data = res.data;
+                        if (data.code == 200) {
+                            // 保存用户名
+                            cookieUtil.setcookie(
+                                config.userkey,
+                                data.data.userName
+                            );
+                            // 保存token
+                            cookieUtil.setcookie(config.serverkey, data.token);
+                            // 登录成功转到主页面
+                            this.$router.push({
+                                path: "/",
+                                name: "index"
+                            });
+                        } else {
+                            // 登录失败提示原因
                             Materialize.toast(data.data, 3000);
                         }
                     })
@@ -128,13 +144,14 @@ export default {
                     });
             }
         },
+        // 注册
         signUp: function() {
             let app = this;
             let realName = app.isEmpty(app.reg_user);
             let realPsw = app.isEmpty(app.reg_psw);
             let realSex = app.isEmpty(app.reg_sex);
-            
-            console.log(app.reg_sex)
+
+            // console.log(app.reg_sex);
             if (realName) {
                 Materialize.toast("username is null", 3000);
             }
@@ -150,8 +167,14 @@ export default {
                         sex: app.reg_sex
                     })
                     .then(res => {
-                        data = res.data;
-                        console.log(data);
+                        // console.log(res);
+                        let data = res.data;
+                        // console.log(data);
+                        if (data.code == 200) {
+                            Materialize.toast("reg success", 3000);
+                        } else {
+                            Materialize.toast(data.data, 3000);
+                        }
                     })
                     .catch(err => {
                         console.log("err");
@@ -162,4 +185,3 @@ export default {
     }
 };
 </script>
-

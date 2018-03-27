@@ -29,6 +29,7 @@ export default {
     name: "item",
     data() {
         return {
+            // 用来返回给父组件判断该商品是否被收藏
             coll: false,
         };
     },
