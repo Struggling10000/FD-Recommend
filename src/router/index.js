@@ -8,7 +8,7 @@ import config from '@/config/config'
 Vue.use(Router)
 // 路由设置
 var router = new Router({
-  mode: 'history',
+  // mode: 'history',
   routes: [
     {
       name: 'index',
