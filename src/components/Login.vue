@@ -2,9 +2,9 @@
     <div id="login_reg">
         <div class="row">
             <div class="col s4"></div>
-            <div id="card" class="col s4 m3">
+            <div id="card" class="col s2 m2">
                 <div class="card blue-grey darken-1 small">
-                    <div class="card">
+                    <div class="card" id="login_body">
                         <div id="full">
                             <span id="signtip">请登录</span>
                         </div>
@@ -59,7 +59,11 @@
     height: 50px;
 }
 #card {
-    margin-left: 5%;
+    margin-left: 8%;
+}
+#login_body{
+    margin-top: 100px;
+    overflow: hidden;
 }
 #singin {
     margin-left: 15px;
@@ -92,7 +96,6 @@ export default {
         };
     },
     mounted: function() {
-        console.log("login init");
         $("select").material_select();
     },
     methods: {
@@ -113,13 +116,15 @@ export default {
             }
 
             if (!realName && !realPsw) {
-                console.log(config.login);
+                
                 axios
                     .post(config.login, {
                         user: app.log_user,
                         passwd: app.log_psw
                     })
                     .then(res => {
+                        cookieUtil.getcookie("session")
+                        console.log(res);
                         let data = res.data;
                         if (data.code == 200) {
                             // 保存用户名
@@ -128,7 +133,15 @@ export default {
                                 data.data.userName
                             );
                             // 保存token
-                            cookieUtil.setcookie(config.serverkey, data.token);
+                            cookieUtil.setcookie(
+                                config.serverkey,
+                                data.token
+                            );
+                            // 保存用户id
+                            cookieUtil.setcookie(
+                                config.userId,
+                                data.data.userId
+                            );
                             // 登录成功转到主页面
                             this.$router.push({
                                 path: "/",

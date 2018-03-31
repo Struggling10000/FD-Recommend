@@ -76,6 +76,7 @@ export default {
                 .then(res => {
                     if (res.data.code === 200) {
                         app.data = res.data.data;
+                        console.log(app.data)
                         app.initItems();
                     } else {
                     }
@@ -136,15 +137,17 @@ export default {
         },
         //移除
         removeItem: function(id) {
-            let index = this.searchItem(id);
+            let index = this.searchIndex(id);
             this.collectItems.splice(index, 1);
         },
-        //搜索
-        searchItem: function(id) {
+        //搜索 返回index
+        searchIndex: function(id) {
             return this.collectItems.findIndex(i => {
                 return i === id;
             });
-        }
+        },
+        
+        
     },
     mounted: function() {
         this.getData();

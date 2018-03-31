@@ -26,7 +26,7 @@
                     <li v-for="id in collectItems">
                         <div class="collapsible-header">
                             <i class="material-icons">shopping_cart</i>
-                                {{getItem(id).itemTitle}}
+                            {{getItem(id).itemTitle}}
                         </div>
                         <div class="collapsible-body">
                             <img class="responsive-img" v-bind:src="getItem(id).itemImg"></img>
@@ -39,10 +39,10 @@
                 </ul>
             </div>
             <div class="col s4 valign-wrapper">
-               
+
             </div>
             <div class="col s4">
-                
+
             </div>
         </div>
     </div>
@@ -67,7 +67,8 @@
 import $ from "jquery";
 import cookieUtil from "@/utils/cookie";
 import config from "@/config/config";
-import signOper from "@/module/signOper"
+import signOper from "@/module/signOper";
+import axios from "axios";
 export default {
     name: "collect",
     data() {
@@ -78,10 +79,49 @@ export default {
             // 原始数据 保存了其他数据
             items: [],
             // 进度条是否显示
-            progress: false
+            progress: false,
+            //要发送的数据
+            records: []
         };
     },
     methods: {
+        // 发送数据
+        postData: function() {
+            let app = this;
+            let token = cookieUtil.getcookie(config.serverkey);
+            console.log(token);
+            if (app.records.length > 0) {
+                console.log(config.buy);
+                console.log(app.records);
+                axios
+                    .post(config.buy, {
+                        token: token,
+                        records: app.records
+                    })
+                    .then(res => {
+                        let data = res.data;
+                        if (data.code == 200) {
+                            console.log("post success");
+                        } else {
+                            Materialize.toast(data.data, 3000);
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            }
+        },
+        // 初始化要发送给服务器的购买记录
+        initData: function() {
+            let app = this;
+            if (app.collectItems.length > 0) {
+                for (var index in app.collectItems) {
+                    let item = app.getItem(app.collectItems[index]);
+                    let userid = cookieUtil.getcookie(config.userId);
+                    app.records.push([parseInt(userid), item.itemId, 1]);
+                }
+            }
+        },
         logout: function() {
             // 退出登录后返回登录界面
             signOper.logout();
@@ -119,16 +159,10 @@ export default {
         }
         // 从路由获取参数
         this.getParams();
+
+        this.initData();
+        this.postData();
     },
-    watch: {
-        collectItems: function(data) {
-            console.log("collectItems");
-            console.log(this.collectItems);
-        },
-        items: function(data) {
-            console.log("items");
-            console.log(this.items);
-        }
-    }
+    watch: {}
 };
 </script>
