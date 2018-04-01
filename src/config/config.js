@@ -5,6 +5,7 @@ const data = host + '/data'
 const login = host + '/login'
 const reg = host + '/reg'
 const buy = host + '/buy'
+const recommend = host + '/recommend' 
 // 前端cookie保存key
 const serverkey = 'token'
 const userkey = 'user'
@@ -14,6 +15,7 @@ export default {
   login,
   reg,
   buy,
+  recommend,
   serverkey,
   userkey,
   userId

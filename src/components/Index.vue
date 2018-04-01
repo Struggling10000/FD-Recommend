@@ -76,7 +76,6 @@ export default {
                 .then(res => {
                     if (res.data.code === 200) {
                         app.data = res.data.data;
-                        console.log(app.data)
                         app.initItems();
                     } else {
                     }

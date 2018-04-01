@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col s4 m4">
                 <ul class="collapsible popout" data-collapsible="accordion">
-                    <li v-for="id in collectItems">
+                    <li v-for="id in collectItems" v-on:click="showrecommend(id)">
                         <div class="collapsible-header">
                             <i class="material-icons">shopping_cart</i>
                             {{getItem(id).itemTitle}}
@@ -42,7 +42,21 @@
 
             </div>
             <div class="col s4">
-
+                <ul v-if="showviews.length > 0" class="collapsible popout" data-collapsible="accordion">
+                    <li v-for="id in showviews">
+                        <div class="collapsible-header">
+                            <i class="material-icons">shopping_cart</i>
+                            {{items[id].itemTitle}}
+                        </div>
+                        <div class="collapsible-body">
+                            <img class="responsive-img" v-bind:src="items[id].itemImg"></img>
+                            <br>
+                            <span>
+                                {{items[id].itemPrice}}
+                            </span>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -81,18 +95,41 @@ export default {
             // 进度条是否显示
             progress: false,
             //要发送的数据
-            records: []
+            records: [],
+            // 后台返回的推荐数据
+            recommends: {},
+            //用来显示推荐数据
+            showviews: [],
+            // 推荐数据是否准备好
+            isReady: false
         };
     },
     methods: {
+        //获取推荐数据
+        recommend: function() {
+            let app = this;
+            axios
+                .get(
+                    config.recommend + "?token=" + cookieUtil.getcookie("token")
+                )
+                .then(res => {
+                    let data = res.data;
+                    if (data.code == 200) {
+                        app.recommends = data.data;
+                    } else {
+                        Materialize.toast(data.data, 3000);
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
         // 发送数据
         postData: function() {
             let app = this;
             let token = cookieUtil.getcookie(config.serverkey);
-            console.log(token);
+
             if (app.records.length > 0) {
-                console.log(config.buy);
-                console.log(app.records);
                 axios
                     .post(config.buy, {
                         token: token,
@@ -102,6 +139,7 @@ export default {
                         let data = res.data;
                         if (data.code == 200) {
                             console.log("post success");
+                            app.recommend();
                         } else {
                             Materialize.toast(data.data, 3000);
                         }
@@ -136,7 +174,7 @@ export default {
         //搜索item
         getItem: function(id) {
             let app = this;
-            let item = app.items.find(item => {
+            var item = app.items.find(item => {
                 return id === item.itemId;
             });
             return item;
@@ -147,6 +185,19 @@ export default {
                 path: path,
                 name: name
             });
+        },
+        showrecommend: function(id) {
+            let app = this;
+            app.isReady = false;
+            for (let i in app.recommends) {
+                if (app.recommends[i].itemId == id) {
+                    app.showviews = app.recommends[i].recommendlist[0];
+                    break;
+                }
+            }
+            console.log(app.showviews)
+            console.log(app.collectItems)
+            $(".collapsible").collapsible();
         }
     },
     props: [],
@@ -163,6 +214,12 @@ export default {
         this.initData();
         this.postData();
     },
-    watch: {}
+    watch: {
+        showviews: function(val) {
+            let app = this;
+            app.isReady = true;
+            $(".collapsible").collapsible();
+        }
+    }
 };
 </script>
